@@ -9,7 +9,7 @@ $conf = [
     "url" => "ssl://gateway.push.apple.com:2195",
     "pemCertificate" => __DIR__ . "/certificate.pem",
     "pemPassword" => "",
-    "deviceToken" => "d1a31e0ce377513261cacb2a17c308c78c7af0a60077edf451c434f09a6083d0"
+    "deviceToken" => "your ios device token"
 ];
 
 $msg = [
