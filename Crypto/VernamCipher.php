@@ -3,6 +3,7 @@
 /**
  * Class VernamCipher
  * Idea from https://en.wikipedia.org/wiki/One-time_pad
+ * and https://ru.wikipedia.org/wiki/%D0%A8%D0%B8%D1%84%D1%80_%D0%92%D0%B5%D1%80%D0%BD%D0%B0%D0%BC%D0%B0
  * One time encryption key is generated out of consecutive hashing iterator + password + salt
  *
  * $crypto = new VernamCipher();
@@ -23,75 +24,66 @@
  * $decrypted = $crypto->decrypt(base64_decode($e));
  *
  */
-class VernamCipher
-{
-    private $password;
-    private $salt;
-    private $hashType = "sha256";
+class VernamCipher {
+	private $password;
+	private $salt;
+	private $hashType = "sha256";
 
-    function setPassword($password)
-    {
-        $this->password = $password;
-    }
+	function setPassword($password) {
+		$this->password = $password;
+	}
 
-    function setSalt($salt)
-    {
-        $this->salt = $salt;
-    }
+	function setSalt($salt) {
+		$this->salt = $salt;
+	}
 
-    function setHashType($hashType)
-    {
-        $this->hashType = $hashType;
-    }
+	function setHashType($hashType) {
+		$this->hashType = $hashType;
+	}
 
-    function decrypt($data)
-    {
-        $this->validate();
-        $key = $this->generateKey($this->password, $this->salt, strlen($data));
-        return $this->xorIt($data, $key);
-    }
+	function decrypt($data) {
+		$this->validate();
+		$key = $this->generateKey($this->password, $this->salt, strlen($data));
+		return $this->xorIt($data, $key);
+	}
 
-    function encrypt($data)
-    {
-        return $this->decrypt($data);
-    }
+	function encrypt($data) {
+		return $this->decrypt($data);
+	}
 
-    private function generateKey($password, $salt, $length)
-    {
-        $i = 0;
-        $secretKey = "";
-        while (true) {
-            $hash = hash($this->hashType, $i . $password . $salt, true);
-            for ($s = 0; $s < strlen($hash); $s++) {
-                $secretKey .= $hash[$s];
-                if (strlen($secretKey) >= $length) {
-                    break 2;
-                }
-            }
-            $i++;
-        }
-        return $secretKey;
-    }
+	private function generateKey($password, $salt, $length) {
+		$i = 0;
+		$secretKey = "";
+		while (true) {
+			$hash = hash($this->hashType, $i . $password . $salt, true);
+			for ($s = 0; $s < strlen($hash); $s++) {
+				$secretKey .= $hash[$s];
+				if (strlen($secretKey) >= $length) {
+					break 2;
+				}
+			}
+			$i++;
+		}
+		return $secretKey;
+	}
 
-    private function xorIt($string, $key)
-    {
-        $strLength = strlen($string);
+	private function xorIt($string, $key) {
+		$strLength = strlen($string);
 
-        for ($i = 0; $i < $strLength; $i++) {
-            $string[$i] = $string[$i] ^ $key[$i];
-        }
+		for ($i = 0; $i < $strLength; $i++) {
+			$string[$i] = $string[$i] ^ $key[$i];
+		}
 
-        return $string;
-    }
+		return $string;
+	}
 
-    private function validate()
-    {
-        if (!$this->password) {
-            throw new Exception("password required");
-        }
+	private function validate() {
+		if (!$this->password) {
+			throw new Exception("password required");
+		}
 
-        if (!$this->salt) {
-            throw new Exception("salt required");
-        }
-    }
+		if (!$this->salt) {
+			throw new Exception("salt required");
+		}
+	}
 }
